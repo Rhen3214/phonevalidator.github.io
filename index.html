@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Number Validator - Made by Seth S. (Nexa) Test Mode</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Phone Number Validator - Made by Seth S. (Nexa) Test Mode</h1>
+        <label for="phoneInput">Enter Phone Number:</label>
+        <input type="text" id="phoneInput" placeholder="Enter phone number...">
+        <button id="validateBtn">Validate</button>
+        <div id="resultContainer"></div>
+    </div>
+
+    <script>
+        document.getElementById('validateBtn').addEventListener('click', function() {
+            let phoneNumber = document.getElementById('phoneInput').value.trim();
+            
+            // Parse phone number to remove non-numeric characters
+            phoneNumber = phoneNumber.replace(/\D/g, '');
+
+            if (phoneNumber.length !== 10) {
+                alert('Please enter a valid 10-digit phone number.');
+                return;
+            }
+
+            const settings = {
+                async: true,
+                crossDomain: true,
+                method: 'GET',
+                headers: {
+                    'X-RapidAPI-Key': '09c32e3b11msh9de8db8c7c25819p15b7b9jsn6f66bd74e749',
+                    'X-RapidAPI-Host': 'reverse-phone-api.p.rapidapi.com'
+                }
+            };
+
+            settings.url = `https://reverse-phone-api.p.rapidapi.com/3.1/phone?phone=${phoneNumber}`;
+
+            $.ajax(settings).done(function(response) {
+                const resultContainer = document.getElementById('resultContainer');
+                resultContainer.innerHTML = ''; // Clear previous results
+
+                if (response.error) {
+                    resultContainer.textContent = response.error;
+                } else {
+                    const isValid = response.is_valid ? 'Yes' : 'No';
+                    const lineType = response.line_type;
+                    const carrier = response.carrier;
+                    const belongsTo = response.belongs_to;
+
+                    let result = `<strong>Phone Number:</strong> ${phoneNumber}<br>`;
+                    result += `<strong>Is Valid:</strong> ${isValid}<br>`;
+                    result += `<strong>Line Type:</strong> ${lineType}<br>`;
+                    result += `<strong>Carrier:</strong> ${carrier}<br>`;
+
+                    if (belongsTo) {
+                        result += `<strong>Belongs To:</strong><br>`;
+                        result += `Name: ${belongsTo.name}<br>`;
+                        result += `Firstname: ${belongsTo.firstname}<br>`;
+                        result += `Middlename: ${belongsTo.middlename}<br>`;
+                        result += `Lastname: ${belongsTo.lastname}<br>`;
+                        result += `Age Range: ${belongsTo.age_range}<br>`;
+                        result += `Gender: ${belongsTo.gender}<br>`;
+                        result += `Type: ${belongsTo.type}<br>`;
+                        result += `Link to Phone Start Date: ${belongsTo.link_to_phone_start_date}<br>`;
+                    }
+
+                    resultContainer.innerHTML = result;
+                }
+            });
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer>
+        Made by Seth S. (Nexa) Test Mode
+    </footer>
+</body>
+</html>
